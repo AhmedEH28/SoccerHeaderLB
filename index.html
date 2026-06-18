@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Football Event Labeling</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand-lockup">
+        <div class="brand-mark">HL</div>
+        <div>
+          <h1>Soccer Header Labeling</h1>
+          <p>Watch, mark the timestamp, and export football events for the header detector.</p>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button id="exportCsvBtn" class="primary">Export CSV</button>
+        <button id="exportJsonBtn">Export JSON</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="intro-panel">
+        <div>
+          <span class="eyebrow"> Annotation workspace</span>
+          <h2>Find the moment/action and Mark the timestamp</h2>
+        </div>
+        <div class="stat-row">
+          <div class="stat-card">
+            <span>Rows</span>
+            <strong id="heroCountText">0</strong>
+          </div>
+          <div class="stat-card">
+            <span>Headers</span>
+            <strong id="headerCountText">0</strong>
+          </div>
+          <div class="stat-card">
+            <span>Non-Headers</span>
+            <strong id="nonHeaderCountText">0</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="video-panel">
+        <div class="section-title">
+          <h2>1. Watch The Video</h2>
+          <span id="autosaveStatus">Autosaved locally</span>
+        </div>
+
+        <div class="control-grid">
+          <label>
+            Annotator
+            <input id="annotatorInput" type="text" placeholder="Student name" />
+          </label>
+          <label>
+            Video name
+            <input id="videoNameInput" type="text" placeholder="match_001.mp4" />
+          </label>
+          <label>
+            Open local video
+            <input id="videoFileInput" type="file" accept="video/*" />
+          </label>
+          <label>
+            FPS for frame step
+            <input id="fpsInput" type="number" min="1" max="120" step="1" value="25" />
+            <span class="field-note" id="fpsStatusText">Auto-detects after video starts playing when supported.</span>
+          </label>
+        </div>
+
+        <video id="videoPlayer" controls preload="metadata"></video>
+
+        <div class="transport">
+          <button id="backOneSecBtn">-1s</button>
+          <button id="backFrameBtn">-1 frame</button>
+          <button id="playPauseBtn" class="primary">Play/Pause</button>
+          <button id="forwardFrameBtn">+1 frame</button>
+          <button id="forwardOneSecBtn">+1s</button>
+        </div>
+
+        <div class="time-strip">
+          <div>
+            <span>Current time</span>
+            <strong id="currentTimeText">00:00:00.000</strong>
+          </div>
+          <button id="copyCurrentTimeBtn">Use Current Time</button>
+        </div>
+      </section>
+
+      <section class="annotation-panel">
+        <div class="section-title">
+          <h2>2. Mark The Event</h2>
+          <span>Header = 1, everything else = 0</span>
+        </div>
+
+        <div class="form-grid">
+          <label>
+            Timestamp
+            <input id="timestampInput" type="text" placeholder="00:13:20.100" />
+          </label>
+
+          <label>
+            Action
+            <select id="actionSelect">
+              <option value="HEADER">HEADER</option>
+              <option value="PASS">PASS</option>
+              <option value="CROSS">CROSS</option>
+              <option value="SHOT">SHOT</option>
+              <option value="CLEARANCE">CLEARANCE</option>
+              <option value="DRIVE">DRIVE</option>
+              <option value="TACKLE">TACKLE</option>
+              <option value="SAVE">SAVE</option>
+              <option value="OTHER">OTHER</option>
+            </select>
+          </label>
+
+          <label>
+            Visibility
+            <select id="visibilitySelect">
+              <option value="visible">visible</option>
+              <option value="partial">partial</option>
+              <option value="not_visible">not visible</option>
+              <option value="uncertain">uncertain</option>
+            </select>
+          </label>
+
+          <label>
+            Team
+            <select id="teamSelect">
+              <option value="home">home</option>
+              <option value="away">away</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="notes-label">
+          Notes
+          <textarea id="notesInput" rows="3" placeholder="If any notes to be added, add here,,."></textarea>
+        </label>
+
+        <div class="quick-actions">
+          <button id="markHeaderBtn" class="primary">Mark HEADER at Current Time</button>
+          <button id="markNonHeaderBtn">Mark NON-HEADER at Current Time</button>
+        </div>
+      </section>
+
+      <section class="table-panel">
+        <div class="section-title">
+          <h2>3. Review Saved Rows</h2>
+          <span id="countText">0 rows</span>
+        </div>
+
+        <div class="table-actions">
+          <input id="searchInput" type="search" placeholder="Search video, label, notes..." />
+          <button id="importCsvBtn">Import CSV</button>
+          <button id="clearAllBtn" class="danger">Clear All</button>
+          <input id="csvFileInput" type="file" accept=".csv,text/csv" hidden />
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Video</th>
+                <th>Timestamp</th>
+                <th>Seconds</th>
+                <th>Action</th>
+                <th>Binary</th>
+                <th>Visibility</th>
+                <th>Team</th>
+                <th>Annotator</th>
+                <th>Notes</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="annotationsBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
