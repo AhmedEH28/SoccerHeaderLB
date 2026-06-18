@@ -3,6 +3,7 @@ const STORAGE_KEY = "football-event-labeling-v1";
 const state = {
   annotations: [],
   videoObjectUrl: null,
+  showAllRows: false,
 };
 
 const els = {
@@ -11,6 +12,9 @@ const els = {
   videoFileInput: document.getElementById("videoFileInput"),
   fpsInput: document.getElementById("fpsInput"),
   fpsStatusText: document.getElementById("fpsStatusText"),
+  helpToggleBtn: document.getElementById("helpToggleBtn"),
+  helpModal: document.getElementById("helpModal"),
+  helpCloseBtn: document.getElementById("helpCloseBtn"),
   videoPlayer: document.getElementById("videoPlayer"),
   currentTimeText: document.getElementById("currentTimeText"),
   timestampInput: document.getElementById("timestampInput"),
@@ -24,6 +28,7 @@ const els = {
   headerCountText: document.getElementById("headerCountText"),
   nonHeaderCountText: document.getElementById("nonHeaderCountText"),
   searchInput: document.getElementById("searchInput"),
+  toggleRowsBtn: document.getElementById("toggleRowsBtn"),
   autosaveStatus: document.getElementById("autosaveStatus"),
   csvFileInput: document.getElementById("csvFileInput"),
 };
@@ -140,13 +145,17 @@ function renderAnnotations() {
     if (!query) return true;
     return Object.values(row).join(" ").toLowerCase().includes(query);
   });
+  const visibleRows = state.showAllRows ? rows : rows.slice(0, 10);
 
   els.countText.textContent = `${state.annotations.length} rows`;
   const headerCount = state.annotations.filter((row) => Number(row.binary_label) === 1).length;
   els.heroCountText.textContent = String(state.annotations.length);
   els.headerCountText.textContent = String(headerCount);
   els.nonHeaderCountText.textContent = String(state.annotations.length - headerCount);
-  els.annotationsBody.innerHTML = rows
+  els.toggleRowsBtn.hidden = rows.length <= 10;
+  els.toggleRowsBtn.textContent = state.showAllRows ? "Show first 10 rows" : `Show all ${rows.length} rows`;
+
+  els.annotationsBody.innerHTML = visibleRows
     .map((row, index) => {
       const binaryClass = row.binary_label === 1 ? "binary-one" : "binary-zero";
       const binaryText = row.binary_label === 1 ? "1 header" : "0 non-header";
@@ -275,6 +284,12 @@ function importCsvText(text) {
 }
 
 function bindEvents() {
+  els.helpToggleBtn.addEventListener("click", toggleHelpModal);
+  els.helpCloseBtn.addEventListener("click", closeHelpModal);
+  els.helpModal.addEventListener("click", (event) => {
+    if (event.target === els.helpModal) closeHelpModal();
+  });
+
   els.videoFileInput.addEventListener("change", () => {
     const file = els.videoFileInput.files?.[0];
     if (!file) return;
@@ -293,12 +308,20 @@ function bindEvents() {
 
   document.getElementById("copyCurrentTimeBtn").addEventListener("click", useCurrentTime);
   document.getElementById("markHeaderBtn").addEventListener("click", () => {
+    if (els.actionSelect.value !== "HEADER") {
+      alert(`${els.actionSelect.value} belongs to NON-HEADER. Select HEADER before using the header button.`);
+      return;
+    }
     useCurrentTime();
     addAnnotation("HEADER");
   });
   document.getElementById("markNonHeaderBtn").addEventListener("click", () => {
+    if (els.actionSelect.value === "HEADER") {
+      alert("HEADER belongs to the header class. Select a non-header action before using the non-header button.");
+      return;
+    }
     useCurrentTime();
-    addAnnotation("OTHER");
+    addAnnotation(els.actionSelect.value);
   });
   document.getElementById("exportCsvBtn").addEventListener("click", exportCsv);
   document.getElementById("exportJsonBtn").addEventListener("click", exportJson);
@@ -326,6 +349,10 @@ function bindEvents() {
   });
 
   els.searchInput.addEventListener("input", renderAnnotations);
+  els.toggleRowsBtn.addEventListener("click", () => {
+    state.showAllRows = !state.showAllRows;
+    renderAnnotations();
+  });
   [els.annotatorInput, els.videoNameInput, els.fpsInput].forEach((input) => {
     input.addEventListener("change", saveState);
   });
@@ -352,19 +379,44 @@ function bindEvents() {
       if (els.videoPlayer.paused) els.videoPlayer.play();
       else els.videoPlayer.pause();
     } else if (event.key.toLowerCase() === "h") {
+      if (els.actionSelect.value !== "HEADER") {
+        alert(`${els.actionSelect.value} belongs to NON-HEADER. Select HEADER before using the header shortcut.`);
+        return;
+      }
       useCurrentTime();
       addAnnotation("HEADER");
     } else if (event.key.toLowerCase() === "n") {
+      if (els.actionSelect.value === "HEADER") {
+        alert("HEADER belongs to the header class. Select a non-header action before using the non-header shortcut.");
+        return;
+      }
       useCurrentTime();
-      addAnnotation("OTHER");
+      addAnnotation(els.actionSelect.value);
     } else if (event.key.toLowerCase() === "a") {
       useCurrentTime();
     } else if (event.key === "ArrowLeft") {
       stepFrame(-1);
     } else if (event.key === "ArrowRight") {
       stepFrame(1);
+    } else if (event.key === "Escape") {
+      closeHelpModal();
     }
   });
+}
+
+function openHelpModal() {
+  els.helpModal.hidden = false;
+  els.helpToggleBtn.setAttribute("aria-expanded", "true");
+}
+
+function closeHelpModal() {
+  els.helpModal.hidden = true;
+  els.helpToggleBtn.setAttribute("aria-expanded", "false");
+}
+
+function toggleHelpModal() {
+  if (els.helpModal.hidden) openHelpModal();
+  else closeHelpModal();
 }
 
 function estimateFpsOnce() {

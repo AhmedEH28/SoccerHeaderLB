@@ -10,10 +10,10 @@
   <body>
     <header class="topbar">
       <div class="brand-lockup">
-        <div class="brand-mark">HL</div>
+        <div class="brand-mark">SHL</div>
         <div>
           <h1>Soccer Header Labeling</h1>
-          <p>Watch, mark the timestamp, and export football events for the header detector.</p>
+          <p>Watch, mark the timestamp, and export the labeled events.</p>
         </div>
       </div>
       <div class="topbar-actions">
@@ -28,6 +28,10 @@
           <span class="eyebrow"> Annotation workspace</span>
           <h2>Find the moment/action and Mark the timestamp</h2>
         </div>
+        <button id="helpToggleBtn" class="help-button" aria-expanded="false" aria-controls="helpModal">
+          <span aria-hidden="true">?</span>
+          How to label
+        </button>
         <div class="stat-row">
           <div class="stat-card">
             <span>Rows</span>
@@ -142,7 +146,7 @@
 
         <div class="quick-actions">
           <button id="markHeaderBtn" class="primary">Mark HEADER at Current Time</button>
-          <button id="markNonHeaderBtn">Mark NON-HEADER at Current Time</button>
+          <button id="markNonHeaderBtn" class="non-header">Mark NON-HEADER at Current Time</button>
         </div>
       </section>
 
@@ -154,6 +158,7 @@
 
         <div class="table-actions">
           <input id="searchInput" type="search" placeholder="Search video, label, notes..." />
+          <button id="toggleRowsBtn" hidden>Show all rows</button>
           <button id="importCsvBtn">Import CSV</button>
           <button id="clearAllBtn" class="danger">Clear All</button>
           <input id="csvFileInput" type="file" accept=".csv,text/csv" hidden />
@@ -181,6 +186,32 @@
         </div>
       </section>
     </main>
+
+    <div id="helpModal" class="modal-backdrop" hidden>
+      <section class="help-modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+        <button id="helpCloseBtn" class="modal-close" aria-label="Close help">&times;</button>
+        <span class="eyebrow">Quick guide</span>
+        <h2 id="helpTitle">How to label a football event</h2>
+        <ol>
+          <li>Open the website.</li>
+          <li>Enter your name in <strong>Annotator</strong>.</li>
+          <li>Click <strong>Open local video</strong>.</li>
+          <li>Select the football video from the computer or USB drive.</li>
+          <li>The app automatically fills the video name and FPS.</li>
+          <li>Watch the video and pause at the moment action happens.</li>
+          <li>Then you will see the current pause time in this format: <strong>hour:minute:second.millisecond</strong>.</li>
+          <li>If the action moment is correct, click <strong>Use Current Time</strong> to copy the time in the timestamp box.</li>
+          <li>If the time is not exact, use <strong>-1 frame</strong>, <strong>+1 frame</strong>, <strong>-1s</strong>, or <strong>+1s</strong> to move backward or forward, or watch in slow speed, then click <strong>Use Current Time</strong>.</li>
+          <li>Select the action type.</li>
+          <li>If the action is a header, click <strong>Mark HEADER at Current Time</strong>.</li>
+          <li>If the action is not a header, click <strong>Mark NON-HEADER at Current Time</strong>.</li>
+          <li>You can also add visibility, team, and notes if needed.</li>
+          <li>When finished, click <strong>Export CSV</strong>.</li>
+          <li>You can also check it at the review saved rows section.</li>
+        </ol>
+        <p class="help-note">Note: The header action and when the time is the most important one.</p>
+      </section>
+    </div>
 
     <script src="./app.js"></script>
   </body>
