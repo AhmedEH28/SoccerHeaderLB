@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Football Event Labeling App
 
 This folder is a standalone labeling interface for students. It does not depend on the header-action-spotting codebase.
@@ -138,3 +139,7 @@ video_name,timestamp,seconds,action,binary_label,visibility,team,annotator,notes
 match_001.mp4,00:13:20.100,800.1,HEADER,1,visible,home,student_a,clear contact,2026-06-18T00:00:00.000Z
 match_001.mp4,00:18:42.500,1122.5,CROSS,0,visible,away,student_a,no header,2026-06-18T00:05:00.000Z
 ```
+=======
+# SoccerHeaderLB
+A soccer header labeling interface
+>>>>>>> 51f48a2add6e153d74b6c8c709b1cc47021b74b7
