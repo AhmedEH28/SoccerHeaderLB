@@ -29,7 +29,6 @@ const els = {
   nonHeaderCountText: document.getElementById("nonHeaderCountText"),
   searchInput: document.getElementById("searchInput"),
   toggleRowsBtn: document.getElementById("toggleRowsBtn"),
-  autosaveStatus: document.getElementById("autosaveStatus"),
   csvFileInput: document.getElementById("csvFileInput"),
 };
 
@@ -73,7 +72,6 @@ function saveState() {
     fps: els.fpsInput.value,
   };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-  els.autosaveStatus.textContent = `Autosaved ${new Date().toLocaleTimeString()}`;
 }
 
 function loadState() {
